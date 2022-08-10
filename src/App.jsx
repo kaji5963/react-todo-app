@@ -42,22 +42,13 @@ export const App = () => {
     setAddTodo(newDeleteTodo);
   };
   //editとの切り替え処理
-  const clickEdit = (todo) => {
-    // const editChangeTodo = [...addTodo];
-    // const newEditTodo = editChangeTodo.map((todo, id) => {
-    //   return todo.id !== id
-    // });
-    setEditTodo(true);
-    setCurrentTodo({ ...todo });
+  const clickEdit = (id) => {
+    if (todo.id !== id) {
+      setEditTodo(true);
+    }
+    setCurrentTodo({ currentTodo });
   };
-
-  // const editUpdateTodo = (todo, id) => {
-  // const updateTodo = addTodo.map((id, updateTodo) => {
-  //   return addTodo.id === id ? updateTodo : id;
-  // });
-  // }
-  // updateTodo(currentTodo.id, currentTodo);
-
+  //編集内容を反映させる
   const clickUpdate = () => {
     const newClickUpdate = [{ ...currentTodo }];
     setAddTodo(newClickUpdate);
@@ -66,25 +57,23 @@ export const App = () => {
   //絞り込み処理
   const selectChange = (e) => {
     setFilter(e.target.value);
-    setFilter({ ...todo });
+    const filterTodo = [...addTodo];
+    const newFilterTodo = filterTodo.filter(({ filter }) => {
+      switch (filter) {
+        case "all":
+          return true;
+        case "schedule":
+          return todo.status === "status";
+        case "progress":
+          return todo.status === "progress";
+        case "complete":
+          return todo.status === "complete";
+        default:
+          return true;
+      }
+    });
+    setFilter({ newFilterTodo });
   };
-  // const filterTodo = (todo) => {
-  //   const filterTodo = [...addTodo, { ...todo }];
-  //   const newFilterTodo = filterTodo.filter(({ filter }) => {
-  //     switch (filter) {
-  //       case "all":
-  //         return true;
-  //       case "schedule":
-  //         return !complete;
-  //       case "progress":
-  //         return !complete;
-  //       case "complete":
-  //         return complete;
-  //       default:
-  //         return true;
-  //     }
-  //   });
-  // };
 
   return (
     <>
@@ -180,36 +169,34 @@ export const App = () => {
             </select>
           </div>
           {/* TODO/追加部分 */}
-          {addTodo
-            .filter((todo) => todo.status !== filter)
-            .map((todo) => {
-              return (
-                <div key={todo.id} className="schedule-item">
-                  <p>{todo.title}</p>
-                  <input
-                    type="date"
-                    value={todo.date}
-                    onChange={(e) => setTodo({ ...todo, date: e.target.value })} //日付部分のデータを取得
-                  />
-                  <select className="status-select" onChange={selectChange}>
-                    <option value="Schedule">Schedule TODO</option>
-                    <option value="Progress">Progress TODO</option>
-                    <option value="Complete">Complete TODO</option>
-                  </select>
-                  <textarea
-                    type="text"
-                    value={todo.detail}
-                    onChange={
-                      (e) => setTodo({ ...todo, detail: e.target.value }) //テキスト部分のデータを取得
-                    }
-                  ></textarea>
-                  <button onClick={() => clickEdit(todo)}>Edit</button>
-                  <button onClick={() => clickDelete(todo.id)}>Remove</button>
-                </div>
-              );
-            })}
+          {addTodo.map((todo) => {
+            return (
+              <div key={todo.id} className="schedule-item">
+                <p>{todo.title}</p>
+                <input
+                  type="date"
+                  value={todo.date}
+                  onChange={(e) => setTodo({ ...todo, date: e.target.value })} //日付部分のデータを取得
+                />
+                <select className="status-select" onChange={selectChange}>
+                  <option value="Schedule">Schedule TODO</option>
+                  <option value="Progress">Progress TODO</option>
+                  <option value="Complete">Complete TODO</option>
+                </select>
+                <textarea
+                  type="text"
+                  value={todo.detail}
+                  onChange={
+                    (e) => setTodo({ ...todo, detail: e.target.value }) //テキスト部分のデータを取得
+                  }
+                ></textarea>
+                <button onClick={() => clickEdit(todo.id)}>Edit</button>
+                <button onClick={() => clickDelete(todo.id)}>Remove</button>
+              </div>
+            );
+          })}
         </div>
       )}
     </>
   );
-};
+};;;
